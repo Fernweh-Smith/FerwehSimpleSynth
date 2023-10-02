@@ -4,6 +4,9 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "SimpleSynthSound.h"
+#include "SimpleSynthVoice.h"
+
 
 double sinFromPhase(double phase) {
     return std::sin(phase * juce::MathConstants<double>::twoPi);
@@ -18,6 +21,8 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                                  .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
 ) {
+    synth.addSound(new SimpleSynthSound());
+    synth.addVoice(new SimpleSynthVoice());
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
@@ -82,9 +87,7 @@ void AudioPluginAudioProcessor::changeProgramName(int index, const juce::String 
 void AudioPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    juce::ignoreUnused(sampleRate, samplesPerBlock);
-    phasePerSample = juce::MidiMessage::getMidiNoteInHertz(64) / sampleRate;
-//    phasePerSample = 261.63 / sampleRate;
+    synth.setCurrentPlaybackSampleRate(sampleRate);
 }
 
 void AudioPluginAudioProcessor::releaseResources() {
@@ -106,10 +109,10 @@ bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout &layout
         return false;
 
     // This checks if the input layout matches the output layout
-#if !JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-#endif
+    #if !JucePlugin_IsSynth
+        if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+            return false;
+    #endif
 
     return true;
 #endif
@@ -117,19 +120,11 @@ bool AudioPluginAudioProcessor::isBusesLayoutSupported(const BusesLayout &layout
 
 void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
                                              juce::MidiBuffer &midiMessages) {
-    juce::ignoreUnused(midiMessages);
-
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    for (auto i = 0; i < buffer.getNumSamples(); i++) {
-        const double sampleValue = sinFromPhase(currentPhase) * maxAmplitude;
-        for (auto chan = 0; chan < buffer.getNumChannels(); chan++) {
-            buffer.setSample(chan, i, (float) sampleValue);
-        }
-        currentPhase += phasePerSample;
-    }
+    buffer.clear();
+
+    synth.renderNextBlock(buffer, midiMessages, 0.0, buffer.getNumSamples());
 }
 
 //==============================================================================

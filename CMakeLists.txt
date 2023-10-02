@@ -25,6 +25,8 @@ juce_add_plugin(${PROJECT_NAME}
          PRIVATE
          src/PluginEditor.cpp
          src/PluginProcessor.cpp
+         src/SimpleSynthSound.cpp
+         src/SimpleSynthVoice.cpp
  )
 
 target_compile_definitions(${PROJECT_NAME}

@@ -52,6 +52,8 @@ private:
     double phasePerSample = 0.0;
     const double maxAmplitude = 0.025;
 
+    juce::Synthesiser synth;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };
