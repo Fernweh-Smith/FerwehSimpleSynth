@@ -5,6 +5,7 @@
 #include "SimpleSynthVoice.h"
 #include "SimpleSynthSound.h"
 #include <juce_core/juce_core.h>
+#include "iostream"
 
 SimpleSynthVoice::SimpleSynthVoice(int midiNoteNumber) :
     midiNote(midiNoteNumber),
@@ -21,15 +22,19 @@ return true;
 
 void SimpleSynthVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound,
                                  int currentPitchWheelPosition) {
-    currentPhase = 0.0;
-    phaseDelta = frequency / getSampleRate();
-    currentPhase += phaseDelta;
+    reset();
 
+    phasePerSample = frequency / getSampleRate();
+    timePerSample = 1.0 / getSampleRate();
+
+    adsr.setSampleRate(getSampleRate());
+    adsr.setParameters({0.25f, 0.1f, 0.75f, 0.1f});
+    adsr.noteOn();
 }
 
 void SimpleSynthVoice::stopNote(float velocity, bool allowTailOff) {
-    clearCurrentNote();
-    phaseDelta = 0.0;
+//    clearAndReset();
+    adsr.noteOff();
 
 }
 
@@ -42,20 +47,42 @@ void SimpleSynthVoice::controllerMoved(int controllerNumber, int newControllerVa
 }
 
 void SimpleSynthVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples) {
-    if(phaseDelta == 0.0)
+    if(!isVoiceActive())
         return;
 
     for(auto i = startSample; i < startSample+numSamples; i++){
-        auto currentValue = (float)std::sin(currentPhase * juce::MathConstants<double>::twoPi) * 0.025f;
+        const auto functionValue = (float)std::sin(currentPhase * juce::MathConstants<double>::twoPi) * 0.025f;
+        const auto envValue = adsr.getNextSample();
+        const auto outValue = functionValue * envValue;
+
 
         for (auto c = outputBuffer.getNumChannels(); --c >= 0;){
-            outputBuffer.addSample (c, i, currentValue);
+            outputBuffer.addSample (c, i, outValue);
         }
 
+        incrementTimers();
 
-        currentPhase += phaseDelta;
+
 
     }
+    if(!adsr.isActive()){
+        clearCurrentNote();
+        reset();
+    }
+
+}
+
+void SimpleSynthVoice::reset() {
+    currentPhase = 0.0;
+    phasePerSample = 0.0;
+    currentTime = 0.0;
+    timePerSample = 0.0;
+    adsr.reset();
+}
+
+void SimpleSynthVoice::incrementTimers() {
+    currentPhase += phasePerSample;
+    currentTime += timePerSample;
 }
 
 
