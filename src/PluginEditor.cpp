@@ -6,7 +6,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor& p)
+AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (PluginAudioProcessor& p)
         : AudioProcessorEditor (&p), processorRef (p)
 {
     juce::ignoreUnused (processorRef);
