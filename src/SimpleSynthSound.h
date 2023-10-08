@@ -17,6 +17,8 @@ public:
 
     bool appliesToChannel(int midiChannel) override;
 
+    const static int MIN_MIDI_NOTE = 21;
+    const static int MAX_MIDI_NOTE = 80;
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleSynthSound)

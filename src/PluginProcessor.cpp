@@ -6,7 +6,8 @@
 #include "PluginEditor.h"
 #include "SimpleSynthSound.h"
 #include "SimpleSynthVoice.h"
-
+#include <juce_dsp/juce_dsp.h>
+#include <iostream>
 
 double sinFromPhase(double phase) {
     return std::sin(phase * juce::MathConstants<double>::twoPi);
@@ -22,7 +23,10 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
 #endif
 ) {
     synth.addSound(new SimpleSynthSound());
-    synth.addVoice(new SimpleSynthVoice());
+    for(int n = SimpleSynthSound::MIN_MIDI_NOTE; n <= SimpleSynthSound::MAX_MIDI_NOTE; n++){
+        synth.addVoice(new SimpleSynthVoice(n));
+    }
+
 }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
@@ -124,7 +128,16 @@ void AudioPluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
     buffer.clear();
 
+//    juce::dsp::Gain<float> gainModule;
+//    getBusBuffer(buffer,false,0);
+//    bus
+
+
     synth.renderNextBlock(buffer, midiMessages, 0.0, buffer.getNumSamples());
+
+
+
+    midiMessages.clear();
 }
 
 //==============================================================================

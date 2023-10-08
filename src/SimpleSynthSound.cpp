@@ -9,7 +9,7 @@ SimpleSynthSound::SimpleSynthSound(){}
 SimpleSynthSound::~SimpleSynthSound() {}
 
 bool SimpleSynthSound::appliesToNote(int midiNoteNumber) {
-    return true;
+    return midiNoteNumber >= MIN_MIDI_NOTE && midiNoteNumber <= MAX_MIDI_NOTE;
 }
 
 bool SimpleSynthSound::appliesToChannel(int midiChannel) {

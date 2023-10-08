@@ -7,11 +7,13 @@
 
 class SimpleSynthVoice : public juce::SynthesiserVoice {
 public:
-    SimpleSynthVoice();
+    SimpleSynthVoice(int midiNoteNumber);
 
     ~SimpleSynthVoice() override;
 
 private:
+    const int midiNote;
+    const double frequency{};
     double currentPhase = 0.0;
     double phaseDelta = 0.0;
     bool canPlaySound(juce::SynthesiserSound *sound) override;

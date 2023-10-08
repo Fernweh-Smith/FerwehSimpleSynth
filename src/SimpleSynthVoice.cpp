@@ -6,7 +6,9 @@
 #include "SimpleSynthSound.h"
 #include <juce_core/juce_core.h>
 
-SimpleSynthVoice::SimpleSynthVoice() {}
+SimpleSynthVoice::SimpleSynthVoice(int midiNoteNumber) :
+    midiNote(midiNoteNumber),
+    frequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber)) {}
 
 SimpleSynthVoice::~SimpleSynthVoice() {
 
@@ -20,7 +22,7 @@ return true;
 void SimpleSynthVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound,
                                  int currentPitchWheelPosition) {
     currentPhase = 0.0;
-    phaseDelta = juce::MidiMessage::getMidiNoteInHertz(60) / getSampleRate();
+    phaseDelta = frequency / getSampleRate();
     currentPhase += phaseDelta;
 
 }

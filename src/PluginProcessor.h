@@ -5,6 +5,8 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include "SimpleSynthesiser.h"
+
 
 double sinFromPhase (double phase);
 
@@ -52,7 +54,7 @@ private:
     double phasePerSample = 0.0;
     const double maxAmplitude = 0.025;
 
-    juce::Synthesiser synth;
+    SimpleSynthesiser synth;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
