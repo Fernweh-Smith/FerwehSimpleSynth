@@ -7,6 +7,25 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "SimpleSynthesiser.h"
 
+namespace IDs {
+#define DEFINE_ID(id) static constexpr const char* id = #id;
+
+    DEFINE_ID(simple_synth_apvts)
+
+    DEFINE_ID(main_group)
+    DEFINE_ID(out_gain)
+
+    DEFINE_ID(generator_group)
+    DEFINE_ID(wave_type)
+    DEFINE_ID(shaper_type)
+    DEFINE_ID(power_strength)
+
+    DEFINE_ID(adsr_group)
+    DEFINE_ID(attack)
+    DEFINE_ID(decay)
+    DEFINE_ID(sustain)
+    DEFINE_ID(release)
+}
 
 double sinFromPhase (double phase);
 
@@ -50,9 +69,9 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    double currentPhase = 0.0;
-    double phasePerSample = 0.0;
-    const double maxAmplitude = 0.025;
+    juce::AudioProcessorValueTreeState apvts;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
 
     SimpleSynthesiser synth;
 

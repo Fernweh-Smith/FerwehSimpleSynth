@@ -21,7 +21,13 @@ PluginAudioProcessor::PluginAudioProcessor()
 #endif
                                  .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-) {
+),
+          apvts(*this,
+                nullptr,
+                juce::Identifier(IDs::simple_synth_apvts),
+                createParameterLayout())
+{
+
     synth.addSound(new SimpleSynthSound());
     for(int n = SimpleSynthSound::MIN_MIDI_NOTE; n <= SimpleSynthSound::MAX_MIDI_NOTE; n++){
         synth.addVoice(new SimpleSynthVoice(n));
@@ -146,21 +152,111 @@ bool PluginAudioProcessor::hasEditor() const {
 }
 
 juce::AudioProcessorEditor *PluginAudioProcessor::createEditor() {
-    return new AudioPluginAudioProcessorEditor(*this);
+//    return new AudioPluginAudioProcessorEditor(*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
+
 
 //==============================================================================
 void PluginAudioProcessor::getStateInformation(juce::MemoryBlock &destData) {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused(destData);
 }
 
 void PluginAudioProcessor::setStateInformation(const void *data, int sizeInBytes) {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused(data, sizeInBytes);
+}
+
+
+
+juce::AudioProcessorValueTreeState::ParameterLayout PluginAudioProcessor::createParameterLayout() {
+
+    using paramLayout = juce::AudioProcessorValueTreeState::ParameterLayout;
+    using paramGroup = juce::AudioProcessorParameterGroup;
+
+    using floatParam = juce::AudioParameterFloat;
+    using choiceParam = juce::AudioParameterChoice;
+    using boolParam = juce::AudioParameterBool;
+
+    paramLayout params;
+
+    //==== Main Group ====
+    {
+        auto mainGroup = std::make_unique<paramGroup>(IDs::main_group, "Main_Group", "");
+        auto outGainParam = std::make_unique<floatParam>(IDs::out_gain,
+                                                         "Gain",
+                                                         0.0f,
+                                                         1.0f,
+                                                         0.5f);
+        mainGroup->addChild(std::move(outGainParam));
+        params.add(std::move(mainGroup));
+    }
+
+    //==== Generator Group ====
+    {
+        auto generatorGroup = std::make_unique<paramGroup>(IDs::generator_group, "Generator" ,"");
+
+        auto waveTypeParam = std::make_unique<choiceParam>(IDs::wave_type,
+                                                           "Wave Type",
+                                                           juce::StringArray("Sin", "Saw", "Triangle", "Square"),
+                                                           0);
+        auto shaperTypeParam = std::make_unique<choiceParam>(IDs::shaper_type,
+                                                             "Shaper Type",
+                                                             juce::StringArray("None", "Power"),
+                                                             0);
+        auto powerStrengthParam = std::make_unique<floatParam>(IDs::power_strength,
+                                                               "Power",
+                                                               1.0f,
+                                                               10.f,
+                                                               2.0f);
+
+        generatorGroup->addChild(std::move(waveTypeParam));
+        generatorGroup->addChild(std::move(shaperTypeParam));
+        generatorGroup->addChild(std::move(powerStrengthParam));
+
+        params.add(std::move(generatorGroup));
+
+    }
+
+    //==== ADSR Group ====
+    {
+        auto adsrGroup = std::make_unique<paramGroup>(IDs::adsr_group, "ADSR", "");
+
+        auto attackParam = std::make_unique<floatParam>(IDs::attack,
+                                                         "Attack",
+                                                         0.0f,
+                                                         1.0f,
+                                                         0.5f);
+        auto decayParam = std::make_unique<floatParam>(IDs::decay,
+                                                         "Decay",
+                                                         0.0f,
+                                                         1.0f,
+                                                         0.5f);
+        auto sustainParam = std::make_unique<floatParam>(IDs::sustain,
+                                                         "Sustain",
+                                                         0.0f,
+                                                         1.0f,
+                                                         0.5f);
+        auto releaseParam = std::make_unique<floatParam>(IDs::release,
+                                                         "Release",
+                                                         0.0f,
+                                                         1.0f,
+                                                         0.5f);
+
+//        auto& releaseReference = *releaseParam;
+        adsrGroup->addChild(std::move(attackParam));
+        adsrGroup->addChild(std::move(decayParam));
+        adsrGroup->addChild(std::move(sustainParam));
+        adsrGroup->addChild(std::move(releaseParam));
+
+        params.add(std::move(adsrGroup));
+
+    }
+
+
+    return params;
 }
 
 
