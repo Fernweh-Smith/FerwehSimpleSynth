@@ -1,6 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 
 Project(Fernweh_Simple_Synth VERSION 0.0.1)
+set(CMAKE_CXX_STANDARD 20)
+
+
 
 include(cmake/CPM.cmake)
 
@@ -28,6 +31,8 @@ juce_add_plugin(${PROJECT_NAME}
          src/SimpleSynthSound.cpp
          src/SimpleSynthVoice.cpp
          src/SimpleSynthesiser.cpp
+         src/ParameterListener.cpp
+         src/PluginParameters.cpp
  )
 
 target_compile_definitions(${PROJECT_NAME}

@@ -9,31 +9,9 @@
 #include <juce_dsp/juce_dsp.h>
 #include <iostream>
 
-double sinFromPhase(double phase) {
-    return std::sin(phase * juce::MathConstants<double>::twoPi);
-}
 
-PluginAudioProcessor::PluginAudioProcessor()
-        : AudioProcessor(BusesProperties()
-#if !JucePlugin_IsMidiEffect
-#if !JucePlugin_IsSynth
-                                 .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-#endif
-                                 .withOutput("Output", juce::AudioChannelSet::stereo(), true)
-#endif
-),
-          apvts(*this,
-                nullptr,
-                juce::Identifier(IDs::simple_synth_apvts),
-                createParameterLayout())
-{
+PluginAudioProcessor::PluginAudioProcessor() : PluginAudioProcessor(juce::AudioProcessorValueTreeState::ParameterLayout{}){}
 
-    synth.addSound(new SimpleSynthSound());
-    for(int n = SimpleSynthSound::MIN_MIDI_NOTE; n <= SimpleSynthSound::MAX_MIDI_NOTE; n++){
-        synth.addVoice(new SimpleSynthVoice(n));
-    }
-
-}
 
 PluginAudioProcessor::~PluginAudioProcessor()
 = default;
@@ -97,7 +75,7 @@ void PluginAudioProcessor::changeProgramName(int index, const juce::String &newN
 void PluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    synth.setCurrentPlaybackSampleRate(sampleRate);
+    synth.prepareToPlay(sampleRate);
 }
 
 void PluginAudioProcessor::releaseResources() {
@@ -139,9 +117,12 @@ void PluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 //    bus
 
 
-    synth.renderNextBlock(buffer, midiMessages, 0.0, buffer.getNumSamples());
+    synth.processNextBlock(buffer, midiMessages, 0.0, buffer.getNumSamples());
 
+    const float gainDB = paramRefs.mainGroup.outGain.get();
+    const float gainLinear = juce::Decibels::decibelsToGain(gainDB);
 
+    buffer.applyGain(gainLinear);
 
     midiMessages.clear();
 }
@@ -184,19 +165,31 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginAudioProcessor::create
 
     //==== Main Group ====
     {
-        auto mainGroup = std::make_unique<paramGroup>(IDs::main_group, "Main_Group", "");
+        auto mainGroup = std::make_unique<paramGroup>(IDs::main_group, "Main_Group", "|");
         auto outGainParam = std::make_unique<floatParam>(IDs::out_gain,
                                                          "Gain",
                                                          0.0f,
                                                          1.0f,
                                                          0.5f);
-        mainGroup->addChild(std::move(outGainParam));
+
+        auto& gainRef = *outGainParam;
+        auto& gain2 = gainRef;
+        auto& gain3  = gain2;
+
+        std::cout << outGainParam << "\n";
+        std::cout << &gainRef << "\n";
+        std::cout << &gain2 << "\n";
+        std::cout << &gain3 << "\n";
+
+
+
+        mainGroup->  addChild(std::move(outGainParam));
         params.add(std::move(mainGroup));
     }
 
     //==== Generator Group ====
     {
-        auto generatorGroup = std::make_unique<paramGroup>(IDs::generator_group, "Generator" ,"");
+        auto generatorGroup = std::make_unique<paramGroup>(IDs::generator_group, "Generator" ,"|");
 
         auto waveTypeParam = std::make_unique<choiceParam>(IDs::wave_type,
                                                            "Wave Type",
@@ -222,7 +215,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginAudioProcessor::create
 
     //==== ADSR Group ====
     {
-        auto adsrGroup = std::make_unique<paramGroup>(IDs::adsr_group, "ADSR", "");
+        auto adsrGroup = std::make_unique<paramGroup>(IDs::adsr_group, "ADSR", "|");
 
         auto attackParam = std::make_unique<floatParam>(IDs::attack,
                                                          "Attack",
@@ -259,9 +252,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginAudioProcessor::create
     return params;
 }
 
+PluginAudioProcessor::PluginAudioProcessor(juce::AudioProcessorValueTreeState::ParameterLayout layout)
+    : AudioProcessor(BusesProperties()
+        #if !JucePlugin_IsMidiEffect
+        #if !JucePlugin_IsSynth
+            .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+        #endif
+            .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+        #endif
+        ),
+        paramRefs(layout),
+        apvts(*this,
+          nullptr,
+          juce::Identifier(IDs::simple_synth_apvts),
+          std::move(layout)),
+          synth(paramRefs)
+{
+
+}
+
 
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter() {
     return new PluginAudioProcessor();
 }
+

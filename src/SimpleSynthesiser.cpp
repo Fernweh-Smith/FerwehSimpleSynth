@@ -4,6 +4,19 @@
 
 #include "SimpleSynthesiser.h"
 #include "SimpleSynthSound.h"
+#include "SimpleSynthVoice.h"
+
+SimpleSynthesiser::SimpleSynthesiser(ParameterReferences &paramRefs) : juce::Synthesiser(), parameters(paramRefs) {
+    addSound(new SimpleSynthSound());
+    for(int n = SimpleSynthSound::MIN_MIDI_NOTE; n <= SimpleSynthSound::MAX_MIDI_NOTE; n++){
+        addVoice(new SimpleSynthVoice(n));
+    }
+}
+
+SimpleSynthesiser::~SimpleSynthesiser() {
+
+}
+
 
 void SimpleSynthesiser::noteOn(int midiChannel, int midiNoteNumber, float velocity) {
 //    Synthesiser::noteOn(midiChannel, midiNoteNumber, velocity);
@@ -30,3 +43,13 @@ void SimpleSynthesiser::noteOn(int midiChannel, int midiNoteNumber, float veloci
     startVoice(voice, mainSound, midiChannel, midiNoteNumber, velocity);
 
 }
+
+void SimpleSynthesiser::prepareToPlay(double sampleRate) {
+    setCurrentPlaybackSampleRate(sampleRate);
+}
+
+void SimpleSynthesiser::processNextBlock(juce::AudioBuffer<float> &outputAudio, const juce::MidiBuffer &inputMidi,
+                                         int startSample, int numSamples) {
+    renderNextBlock(outputAudio, inputMidi, startSample, numSamples);
+}
+
