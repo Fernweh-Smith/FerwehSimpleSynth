@@ -33,6 +33,7 @@ juce_add_plugin(${PROJECT_NAME}
          src/SimpleSynthesiser.cpp
          src/ParameterListener.cpp
          src/PluginParameters.cpp
+         src/WaveFunctions.cpp
  )
 
 target_compile_definitions(${PROJECT_NAME}

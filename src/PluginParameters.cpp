@@ -29,7 +29,7 @@ ParameterReferences::GeneratorGroup::GeneratorGroup(
         paramGroup &group)
         : wave_type(addToGroup(group, std::make_unique<choiceParam>(IDs::wave_type,
                                                                     "Wave Type",
-                                                                    juce::StringArray("Sin", "Saw", "Triangle", "Square"),
+                                                                    juce::StringArray(IDs::sin_wave, IDs::sawtooth_wave, IDs::triangle_wave, IDs::square_wave),
                                                                     0))),
           shaper_type(addToGroup(group, std::make_unique<choiceParam>(IDs::shaper_type,
                                                                       "Shaper Type",
@@ -46,9 +46,8 @@ ParameterReferences::ADSRGroup::ADSRGroup(
         paramGroup &group)
         : attack(addToGroup(group, std::make_unique<floatParam>(IDs::attack,
                                                                 "Attack",
-                                                                0.0f,
-                                                                1.0f,
-                                                                0.5f))),
+                                                                juce::NormalisableRange<float>(0.0f, 4.0f, 0.0, 0.33f),
+                                                                0.1f))),
           decay(addToGroup(group, std::make_unique<floatParam>(IDs::decay,
                                                                "Decay",
                                                                0.0f,

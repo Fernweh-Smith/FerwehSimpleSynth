@@ -53,7 +53,7 @@ void SimpleSynthVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, i
         return;
 
     for(auto i = startSample; i < startSample+numSamples; i++){
-        const auto functionValue = (float)toneFunction(currentPhase * juce::MathConstants<double>::twoPi) * 0.025f;
+        const auto functionValue = (float)toneFunction(currentPhase * juce::MathConstants<double>::twoPi) * 0.25f;
         const auto envValue = adsr.getNextSample();
         const auto outValue = functionValue * envValue;
 
@@ -84,7 +84,7 @@ void SimpleSynthVoice::reset() {
 
 void SimpleSynthVoice::incrementTimers() {
     currentPhase += phasePerSample;
-    currentTime += timePerSample;
+    currentTime = std::fmod(currentTime + timePerSample, 1.0);
 }
 
 

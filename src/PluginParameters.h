@@ -16,6 +16,10 @@ namespace IDs {
 
     DEFINE_ID(generator_group)
     DEFINE_ID(wave_type)
+    DEFINE_ID(sin_wave)
+    DEFINE_ID(sawtooth_wave)
+    DEFINE_ID(triangle_wave)
+    DEFINE_ID(square_wave)
     DEFINE_ID(shaper_type)
     DEFINE_ID(power_strength)
 

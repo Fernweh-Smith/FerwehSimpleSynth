@@ -5,6 +5,7 @@
 #include "SimpleSynthesiser.h"
 #include "SimpleSynthSound.h"
 #include "SimpleSynthVoice.h"
+#include "WaveFunctions.h"
 
 SimpleSynthesiser::SimpleSynthesiser(ParameterReferences &paramRefs) : juce::Synthesiser(), parameters(paramRefs) {
     addSound(new SimpleSynthSound());
@@ -58,7 +59,20 @@ void SimpleSynthesiser::processNextBlock(juce::AudioBuffer<float> &outputAudio, 
 }
 
 double SimpleSynthesiser::toneFromAngle(double angle) {
-    return std::sin(angle);
+    const auto waveType = parameters.generatorGroup.wave_type.getIndex();
+
+    switch (waveType) {
+        case(0):
+            return WaveFunctions::sinFromAngle(angle);
+        case(1):
+            return WaveFunctions::sawtoothFromAngle(angle);
+        case(2):
+            return WaveFunctions::triangleFromAngle(angle);
+        case(3):
+            return WaveFunctions::squareFromAngle(angle);
+        default:
+            return WaveFunctions::sinFromAngle(angle);
+    }
 }
 
 juce::ADSR::Parameters SimpleSynthesiser::adsrPramsFromPluginParams() {
