@@ -7,9 +7,11 @@
 #include <juce_core/juce_core.h>
 #include "iostream"
 
-SimpleSynthVoice::SimpleSynthVoice(int midiNoteNumber) :
+SimpleSynthVoice::SimpleSynthVoice(int midiNoteNumber, std::function<double(double angle)> toneFunc, std::function<juce::ADSR::Parameters()> adsrParamFunc) :
     midiNote(midiNoteNumber),
-    frequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber)) {}
+    frequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber)),
+    toneFunction(toneFunc),
+    adsrParamFunction(adsrParamFunc){}
 
 SimpleSynthVoice::~SimpleSynthVoice() {
 
@@ -28,7 +30,7 @@ void SimpleSynthVoice::startNote(int midiNoteNumber, float velocity, juce::Synth
     timePerSample = 1.0 / getSampleRate();
 
     adsr.setSampleRate(getSampleRate());
-    adsr.setParameters({0.25f, 0.1f, 0.75f, 0.1f});
+    adsr.setParameters(adsrParamFunction());
     adsr.noteOn();
 }
 
@@ -51,7 +53,7 @@ void SimpleSynthVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, i
         return;
 
     for(auto i = startSample; i < startSample+numSamples; i++){
-        const auto functionValue = (float)std::sin(currentPhase * juce::MathConstants<double>::twoPi) * 0.025f;
+        const auto functionValue = (float)toneFunction(currentPhase * juce::MathConstants<double>::twoPi) * 0.025f;
         const auto envValue = adsr.getNextSample();
         const auto outValue = functionValue * envValue;
 

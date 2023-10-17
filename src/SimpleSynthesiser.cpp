@@ -9,9 +9,13 @@
 SimpleSynthesiser::SimpleSynthesiser(ParameterReferences &paramRefs) : juce::Synthesiser(), parameters(paramRefs) {
     addSound(new SimpleSynthSound());
     for(int n = SimpleSynthSound::MIN_MIDI_NOTE; n <= SimpleSynthSound::MAX_MIDI_NOTE; n++){
-        addVoice(new SimpleSynthVoice(n));
+        addVoice(new SimpleSynthVoice(n,
+                                      [this](double angle){ return toneFromAngle(angle); },
+                                      [this](){ return adsrPramsFromPluginParams(); } ));
     }
 }
+
+
 
 SimpleSynthesiser::~SimpleSynthesiser() {
 
@@ -51,5 +55,17 @@ void SimpleSynthesiser::prepareToPlay(double sampleRate) {
 void SimpleSynthesiser::processNextBlock(juce::AudioBuffer<float> &outputAudio, const juce::MidiBuffer &inputMidi,
                                          int startSample, int numSamples) {
     renderNextBlock(outputAudio, inputMidi, startSample, numSamples);
+}
+
+double SimpleSynthesiser::toneFromAngle(double angle) {
+    return std::sin(angle);
+}
+
+juce::ADSR::Parameters SimpleSynthesiser::adsrPramsFromPluginParams() {
+    const float attack = parameters.adsrGroup.attack.get();
+    const float decay = parameters.adsrGroup.decay.get();
+    const float sustain = parameters.adsrGroup.sustain.get();
+    const float release = parameters.adsrGroup.release.get();
+    return juce::ADSR::Parameters(attack, decay, sustain, release);
 }
 

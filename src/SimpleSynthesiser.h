@@ -24,6 +24,7 @@ protected:
 
 private:
     ParameterReferences& parameters;
-
+    double toneFromAngle(double angle);
+    juce::ADSR::Parameters adsrPramsFromPluginParams();
 
 };
