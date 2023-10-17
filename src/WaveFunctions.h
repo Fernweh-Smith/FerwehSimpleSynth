@@ -10,4 +10,9 @@ namespace WaveFunctions{
     double triangleFromAngle(double angle);
     double squareFromAngle(double angle);
 
+    double shapeByPower(double x, double power);
+    double shapeByFractionalPower(double x, double power);
+
 }
+
+

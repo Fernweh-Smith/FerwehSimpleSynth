@@ -60,18 +60,38 @@ void SimpleSynthesiser::processNextBlock(juce::AudioBuffer<float> &outputAudio, 
 
 double SimpleSynthesiser::toneFromAngle(double angle) {
     const auto waveType = parameters.generatorGroup.wave_type.getIndex();
+    const auto shaperType = parameters.generatorGroup.shaper_type.getIndex();
+    const auto powerStrength = static_cast<double>(parameters.generatorGroup.powerStrength.get());
+
+    double outValue = 0.0;
 
     switch (waveType) {
         case(0):
-            return WaveFunctions::sinFromAngle(angle);
+            outValue = WaveFunctions::sinFromAngle(angle);
+            break;
         case(1):
-            return WaveFunctions::sawtoothFromAngle(angle);
+            outValue = WaveFunctions::sawtoothFromAngle(angle);
+            break;
         case(2):
-            return WaveFunctions::triangleFromAngle(angle);
+            outValue = WaveFunctions::triangleFromAngle(angle);
+            break;
         case(3):
-            return WaveFunctions::squareFromAngle(angle);
+            outValue = WaveFunctions::squareFromAngle(angle);
+            break;
         default:
-            return WaveFunctions::sinFromAngle(angle);
+            outValue = WaveFunctions::sinFromAngle(angle);
+            break;
+    }
+
+    switch (shaperType){
+        case(0):
+            return outValue;
+        case(1):
+            return WaveFunctions::shapeByPower(outValue, powerStrength);
+        case(2):
+            return WaveFunctions::shapeByFractionalPower(outValue, powerStrength);
+        default:
+            return outValue;
     }
 }
 

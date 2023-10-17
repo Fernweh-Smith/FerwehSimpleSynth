@@ -17,6 +17,8 @@ double WaveFunctions::sinFromAngle(double angle) {
 
 double WaveFunctions::sawtoothFromAngle(double angle) {
     return std::fmod( (angle - PI) /  PI, 2.0) - 1.0;
+//    return std::fmod( (PI - angle) /  PI, 2.0) - 1.0;
+
 }
 
 double WaveFunctions::triangleFromAngle(double angle) {
@@ -29,4 +31,11 @@ double WaveFunctions::squareFromAngle(double angle) {
     return (std::signbit(sinFromAngle(angle)) * 2.0) - 1.0;
 }
 
+double WaveFunctions::shapeByPower(double x, double power) {
+    return ((std::signbit(x) * -2.0) - 1.0) * std::pow(std::abs(x), power);
+ }
 
+double WaveFunctions::shapeByFractionalPower(double x, double power) {
+    return ((std::signbit(x) * -2.0) - 1.0) * std::pow(std::abs(x), 1.0 / power);
+
+}
