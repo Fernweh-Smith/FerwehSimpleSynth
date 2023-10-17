@@ -60,6 +60,8 @@ private:
 
     SimpleSynthesiser synth;
 
+    float currentGain = -1.0;
+
 //    ParameterListener gainListener;
 
     //==============================================================================

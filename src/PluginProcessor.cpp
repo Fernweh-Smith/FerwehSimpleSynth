@@ -119,10 +119,15 @@ void PluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
     synth.processNextBlock(buffer, midiMessages, 0.0, buffer.getNumSamples());
 
-    const float gainDB = paramRefs.mainGroup.outGain.get();
-    const float gainLinear = juce::Decibels::decibelsToGain(gainDB);
+    const float decibels = paramRefs.mainGroup.outGain.get();
+    const float targetGain = juce::Decibels::decibelsToGain(decibels);
 
-    buffer.applyGain(gainLinear);
+    if(juce::approximatelyEqual(targetGain, currentGain) || juce::approximatelyEqual(currentGain, -1.0f)){
+        buffer.applyGain(targetGain);
+    } else {
+        buffer.applyGainRamp(0, buffer.getNumSamples(), currentGain, targetGain);
+    }
+    currentGain = targetGain;
 
     midiMessages.clear();
 }
