@@ -7,7 +7,7 @@
 #include <juce_core/juce_core.h>
 #include "iostream"
 
-SimpleSynthVoice::SimpleSynthVoice(int midiNoteNumber, std::function<double(double angle)> toneFunc, std::function<juce::ADSR::Parameters()> adsrParamFunc) :
+SimpleSynthVoice::SimpleSynthVoice(int midiNoteNumber, const std::function<double(double angle)>& toneFunc, const std::function<juce::ADSR::Parameters()>& adsrParamFunc) :
     midiNote(midiNoteNumber),
     frequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber)),
     toneFunction(toneFunc),

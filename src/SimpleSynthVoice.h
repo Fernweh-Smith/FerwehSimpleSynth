@@ -7,7 +7,7 @@
 
 class SimpleSynthVoice : public juce::SynthesiserVoice {
 public:
-    SimpleSynthVoice(int midiNoteNumber, std::function<double(double)> toneFunc, std::function<juce::ADSR::Parameters()> adsrParamFunc);
+    SimpleSynthVoice(int midiNoteNumber, const std::function<double(double)>& toneFunc, const std::function<juce::ADSR::Parameters()>& adsrParamFunc);
 
     ~SimpleSynthVoice() override;
 
@@ -36,8 +36,8 @@ private:
     void reset();
     void incrementTimers();
 
-    std::function<double(double angle)> toneFunction;
-    std::function<juce::ADSR::Parameters()> adsrParamFunction;
+    const std::function<double(double angle)>& toneFunction;
+    const std::function<juce::ADSR::Parameters()>& adsrParamFunction;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SimpleSynthVoice)
