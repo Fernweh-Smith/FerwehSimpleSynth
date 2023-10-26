@@ -31,10 +31,18 @@ double WaveFunctions::squareFromAngle(double angle) {
 }
 
 double WaveFunctions::shapeByPower(double x, double power) {
-    return ((std::signbit(x) * -2.0) - 1.0) * std::pow(std::abs(x), power);
+    double sign = 1.0;
+    if(std::signbit(x)){
+        sign = -1.0;
+    }
+    return sign * std::pow(std::abs(x), power);
  }
 
 double WaveFunctions::shapeByFractionalPower(double x, double power) {
-    return ((std::signbit(x) * -2.0) - 1.0) * std::pow(std::abs(x), 1.0 / power);
+    double sign = 1.0;
+    if(std::signbit(x)){
+        sign = -1.0;
+    }
+    return sign * std::pow(std::abs(x), 1.0 / power);
 
 }

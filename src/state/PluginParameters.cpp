@@ -67,7 +67,7 @@ ParameterReferences::GeneratorGroup::GeneratorGroup(
           shaper_type(addToGroup(group, std::make_unique<choiceParam>(IDs::shaper_type,
                                                                       "Shaper Type",
                                                                       juce::StringArray("None", "Power", "Fractional Power"),
-                                                                      3))),
+                                                                      2))),
           powerStrength(addToGroup(group, std::make_unique<floatParam>(IDs::power_strength,
                                                                        "Power",
                                                                        1.0f,
