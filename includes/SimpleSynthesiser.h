@@ -6,7 +6,7 @@
 
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "PluginParameters.h"
-#include "WaveFunctions.h"
+#include "../src/synth/WaveFunctions.h"
 
 
 class SimpleSynthesiser : protected juce::Synthesiser {

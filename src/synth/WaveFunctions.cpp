@@ -5,7 +5,6 @@
 #include "WaveFunctions.h"
 #include <cmath>
 #include <numbers>
-#include <random>
 
 
 #define PI std::numbers::pi

@@ -24,17 +24,21 @@ juce_add_plugin(${PROJECT_NAME}
         FORMATS AU VST3 Standalone
         PRODUCT_NAME "Simple Synth"
 )
- target_sources(${PROJECT_NAME}
-         PRIVATE
-         src/PluginEditor.cpp
-         src/PluginProcessor.cpp
-         src/SimpleSynthSound.cpp
-         src/SimpleSynthVoice.cpp
-         src/SimpleSynthesiser.cpp
-         src/ParameterListener.cpp
-         src/PluginParameters.cpp
-         src/WaveFunctions.cpp
- )
+# target_sources(${PROJECT_NAME}
+#         PRIVATE
+#         src/PluginEditor.cpp
+#         src/PluginProcessor.cpp
+#         src/SimpleSynthSound.cpp
+#         src/SimpleSynthVoice.cpp
+#         src/SimpleSynthesiser.cpp
+#         src/ParameterListener.cpp
+#         src/PluginParameters.cpp
+#         src/WaveFunctions.cpp
+# )
+
+add_subdirectory(src)
+
+target_include_directories(${PROJECT_NAME} PRIVATE includes)
 
 target_compile_definitions(${PROJECT_NAME}
         PUBLIC
