@@ -4,14 +4,15 @@
 
 #pragma once
 
-#include "PluginProcessor.h"
+//#include "PluginProcessor.h"
 
+class PluginAudioProcessor;
 
-class AudioPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
+class PluginEditor  : public juce::AudioProcessorEditor
 {
 public:
-    explicit AudioPluginAudioProcessorEditor (PluginAudioProcessor&);
-    ~AudioPluginAudioProcessorEditor() override;
+    explicit PluginEditor (PluginAudioProcessor&, juce::AudioProcessorValueTreeState& apvts);
+    ~PluginEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -20,7 +21,16 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    PluginAudioProcessor& processorRef;
+    PluginAudioProcessor& pluginProcessor;
+    juce::AudioProcessorValueTreeState& valueTreeState;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
+    juce::Slider gainSlider;
+    juce::Label gainLabel;
+
+    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+//    std::unique_ptr<SliderAttachment> gainSliderAttachment;
+    SliderAttachment gainSliderAttachment;
+
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };

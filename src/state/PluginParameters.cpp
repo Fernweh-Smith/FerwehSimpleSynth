@@ -53,7 +53,7 @@ ParameterReferences::MainGroup::MainGroup(
         paramGroup &group)
         : outGain(addToGroup(group, std::make_unique<floatParam>(IDs::out_gain,
                                                                  "Gain",
-                                                                 juce::NormalisableRange<float>(-12.0f, 12.0f),
+                                                                 juce::NormalisableRange<float>(-60.0f, 12.0f, 0.0f, 2.0f, true),
                                                                  0.0f,
                                                                  generateGainAttrs())))
 {}

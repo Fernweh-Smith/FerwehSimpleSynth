@@ -56,6 +56,7 @@ private:
     explicit PluginAudioProcessor(juce::AudioProcessorValueTreeState::ParameterLayout layout);
     ParameterReferences paramRefs;
     juce::AudioProcessorValueTreeState apvts;
+
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     SimpleSynthesiser synth;
