@@ -4,14 +4,14 @@
 
 #pragma once
 
-//#include "PluginProcessor.h"
+#include "components/GainFader.h"
 
 class PluginAudioProcessor;
 
 class PluginEditor  : public juce::AudioProcessorEditor
 {
 public:
-    explicit PluginEditor (PluginAudioProcessor&, juce::AudioProcessorValueTreeState& apvts);
+    PluginEditor (PluginAudioProcessor& p, juce::AudioProcessorValueTreeState& apvts);
     ~PluginEditor() override;
 
     //==============================================================================
@@ -24,12 +24,7 @@ private:
     PluginAudioProcessor& pluginProcessor;
     juce::AudioProcessorValueTreeState& valueTreeState;
 
-    juce::Slider gainSlider;
-    juce::Label gainLabel;
-
-    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-//    std::unique_ptr<SliderAttachment> gainSliderAttachment;
-    SliderAttachment gainSliderAttachment;
+    GainFader gainFader;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

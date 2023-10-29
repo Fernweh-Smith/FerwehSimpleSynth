@@ -6,3 +6,4 @@ target_sources(${PROJECT_NAME}
 
 add_subdirectory(state)
 add_subdirectory(synth)
+add_subdirectory(gui)
