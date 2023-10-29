@@ -6,6 +6,7 @@
 #include "PluginEditor.h"
 #include "PluginParameters.h"
 
+
 //==============================================================================
 PluginEditor::PluginEditor (PluginAudioProcessor& p, juce::AudioProcessorValueTreeState& apvts)
         : AudioProcessorEditor (&p),
@@ -15,6 +16,7 @@ PluginEditor::PluginEditor (PluginAudioProcessor& p, juce::AudioProcessorValueTr
 {
     gainLabel.setText("Gain", juce::dontSendNotification);
     gainLabel.setJustificationType(juce::Justification::centred);
+
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     gainSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, gainSlider.getTextBoxWidth(), gainSlider.getTextBoxHeight());
     addAndMakeVisible(gainSlider);
@@ -36,7 +38,8 @@ void PluginEditor::paint (juce::Graphics& g)
 
     auto childBounds = getLookAndFeel().getSliderLayout(gainSlider).sliderBounds;
     auto bounds = getLocalArea(&gainSlider, childBounds);
-
+    g.drawRect(bounds);
+    g.drawRect(childBounds);
     std::vector<float> valuesToMark {6.0f, 3.0f, 0.0f, -3.0f, -6.0f, -12.0f, -20.0f, -30.0f, -100.0f};
 
     g.setColour(juce::Colours::white);
@@ -67,10 +70,15 @@ void PluginEditor::resized()
     fb.justifyContent = juce::FlexBox::JustifyContent::center;
     fb.alignContent = juce::FlexBox::AlignContent::center;
     fb.flexDirection = juce::FlexBox::Direction::column;
+    fb.alignItems = juce::FlexBox::AlignItems::flexEnd;
 
-    fb.items.add(juce::FlexItem(gainSlider).withMinHeight(200).withMinWidth(75));
+//    fb.items.add(juce::FlexItem(gainSlider).withMinHeight(200).withMinWidth(75));
+    fb.items.add(juce::FlexItem(gainSlider).withMinHeight(200).withWidth(75));
+
     fb.items.add(juce::FlexItem(gainLabel).withMinHeight(50).withMinWidth(75));
 
 
     fb.performLayout(getLocalBounds());
+    getLookAndFeel().getSliderLayout(gainSlider).sliderBounds.translate(100, 0);
+
 }

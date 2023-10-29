@@ -22,7 +22,9 @@ static juce::AudioProcessorParameterGroup& addToLayout( juce::AudioProcessorValu
 static juce::AudioParameterFloatAttributes generateGainAttrs(){
     return juce::AudioParameterFloatAttributes()
     .withStringFromValueFunction([](float x, int len){
-        return (std::stringstream() << std::fixed << std::setprecision(2) << x << " dB").str();
+        //When passing x directly into the string stream values of 0.00 are shown as negative.
+        //To Solve this I add 0.001 to x when passing it in.
+        return (std::stringstream() << std::fixed << std::setprecision(2) << (x + 0.001f) << " dB").str();
     })
     .withValueFromStringFunction([](const juce::String& str){
         return str.getFloatValue();
