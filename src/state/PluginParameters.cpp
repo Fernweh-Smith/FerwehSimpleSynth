@@ -48,12 +48,21 @@ static juce::AudioParameterFloatAttributes generateTimeAttrs(){
             });
 }
 
+static juce::NormalisableRange<float> generateGainNormalisableRange(){
+    const float maxValue = 6.0f;
+    const float minValue = -100.0f;
+
+    auto range = juce::NormalisableRange<float>(minValue, maxValue);
+    range.setSkewForCentre(-maxValue);
+
+    return range;
+}
 
 ParameterReferences::MainGroup::MainGroup(
         paramGroup &group)
         : outGain(addToGroup(group, std::make_unique<floatParam>(IDs::out_gain,
                                                                  "Gain",
-                                                                 juce::NormalisableRange<float>(-60.0f, 12.0f, 0.0f, 2.0f, true),
+                                                                 generateGainNormalisableRange(),
                                                                  0.0f,
                                                                  generateGainAttrs())))
 {}

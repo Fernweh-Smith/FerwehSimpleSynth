@@ -32,17 +32,28 @@ PluginEditor::~PluginEditor()
 void PluginEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colours::grey);
+    g.fillAll(juce::Colour(34, 54, 67));
 
-//    g.setColour(juce::Colours::pink);
-
-    auto componentBounds = gainSlider.getBounds();
     auto childBounds = getLookAndFeel().getSliderLayout(gainSlider).sliderBounds;
-    auto offset = componentBounds.getTopLeft();
-    g.drawRect(childBounds.translated(offset.getX(), offset.getY()));
+    auto bounds = getLocalArea(&gainSlider, childBounds);
 
+    std::vector<float> valuesToMark {6.0f, 3.0f, 0.0f, -3.0f, -6.0f, -12.0f, -20.0f, -30.0f, -100.0f};
 
+    g.setColour(juce::Colours::white);
 
+    for(auto val : valuesToMark){
+        const double posOnSlider = gainSlider.valueToProportionOfLength(val);
+        const float minY = bounds.getBottom();
+        const float maxY = bounds.getTopLeft().getY();
+        const float centerX = bounds.getCentreX();
+        const float startX = centerX - 10.0f;
+        const float endX = startX - 15.0f;
+        const auto yPos = juce::jmap<float>(posOnSlider, minY, maxY);
+        g.drawLine(startX, yPos, endX, yPos);
+        g.setFont(12.0f);
+        const auto textRect = juce::Rectangle(40.0f, 2.0f).withCentre({endX - 25, yPos});
+        g.drawText(juce::String(val), textRect, juce::Justification::centredRight);
+    }
 
 }
 
