@@ -4,14 +4,16 @@
 
 #pragma once
 
+#include "juce_gui_basics/juce_gui_basics.h"
 #include "components/GainFader.h"
+#include "components/ChoicePad.h"
 
 class PluginAudioProcessor;
 
 class PluginEditor  : public juce::AudioProcessorEditor
 {
 public:
-    PluginEditor (PluginAudioProcessor& p, juce::AudioProcessorValueTreeState& apvts);
+    PluginEditor (PluginAudioProcessor& p, PluginParameters& paramStruct);
     ~PluginEditor() override;
 
     //==============================================================================
@@ -22,9 +24,10 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     PluginAudioProcessor& pluginProcessor;
-    juce::AudioProcessorValueTreeState& valueTreeState;
+    PluginParameters& parameters;
 
     GainFader gainFader;
+    ChoicePad choicePad;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

@@ -30,6 +30,7 @@ namespace IDs {
     DEFINE_ID(release)
 }
 
+
 struct ParameterReferences{
     using paramLayout = juce::AudioProcessorValueTreeState::ParameterLayout;
     using paramGroup = juce::AudioProcessorParameterGroup;
@@ -65,4 +66,19 @@ struct ParameterReferences{
     MainGroup mainGroup;
     GeneratorGroup generatorGroup;
     ADSRGroup adsrGroup;
+};
+
+
+struct PluginParameters{
+    PluginParameters(juce::AudioProcessor& processorToConnect,
+                              juce::UndoManager* undoManager,
+                              juce::AudioProcessorValueTreeState::ParameterLayout& layout) :
+                              references(layout),
+                              treeState(processorToConnect,
+                                        undoManager,
+                                        juce::Identifier(IDs::simple_synth_apvts),
+                                        std::move(layout)){}
+
+    ParameterReferences references;
+    juce::AudioProcessorValueTreeState treeState;
 };

@@ -7,20 +7,34 @@
 
 #include <utility>
 
-ParameterListener::ParameterListener(juce::AudioProcessorValueTreeState& valueTreeState, std::string id) : idToTrack(std::move(id)) , apvts(valueTreeState) {
-    apvts.addParameterListener(idToTrack, this);
+ParameterListener::ParameterListener(juce::AudioProcessorValueTreeState& valueTreeState, const juce::String& id, OnChangeCallback changedCallback) :
+    ParameterListener(valueTreeState, std::vector<juce::String>{id}, std::move(changedCallback))
+{}
+
+ParameterListener::ParameterListener(juce::AudioProcessorValueTreeState &valueTreeState,
+                                     std::vector<juce::String> idsToTrack, OnChangeCallback changedCallback) :
+                                        trackedIDs(std::move(idsToTrack)) , apvts(valueTreeState), callback(std::move(changedCallback)){
+
+    for(auto& id : trackedIDs){
+        apvts.addParameterListener(id, this);
+    }
+
 }
 
+
 ParameterListener::~ParameterListener() {
-    apvts.removeParameterListener(idToTrack, this);
+
+    for(auto& id : trackedIDs){
+        apvts.removeParameterListener(id, this);
+    }
+
 }
 
 
 void ParameterListener::parameterChanged(const juce::String &parameterID, float newValue) {
-    std::cout << "Tracking ID = " + idToTrack << "\n";
-    std::cout << "Incoming ID = " + parameterID << "\n";
-    std::cout << "New Value = " << newValue << "\n";
+    callback(parameterID.toStdString(), newValue);
 }
+
 
 
 

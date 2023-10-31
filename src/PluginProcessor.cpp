@@ -119,7 +119,7 @@ void PluginAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer,
 
     synth.processNextBlock(buffer, midiMessages, 0.0, buffer.getNumSamples());
 
-    const float decibels = paramRefs.mainGroup.outGain.get();
+    const float decibels = parameters.references.mainGroup.outGain.get();
     const float targetGain = juce::Decibels::decibelsToGain(decibels);
 
     if(juce::approximatelyEqual(targetGain, currentGain) || juce::approximatelyEqual(currentGain, -1.0f)){
@@ -138,7 +138,7 @@ bool PluginAudioProcessor::hasEditor() const {
 }
 
 juce::AudioProcessorEditor *PluginAudioProcessor::createEditor() {
-    return new PluginEditor(*this, apvts);
+    return new PluginEditor(*this, parameters);
 //    return new juce::GenericAudioProcessorEditor(*this);
 }
 
@@ -266,12 +266,9 @@ PluginAudioProcessor::PluginAudioProcessor(juce::AudioProcessorValueTreeState::P
             .withOutput("Output", juce::AudioChannelSet::stereo(), true)
         #endif
         ),
-        paramRefs(layout),
-        apvts(*this,
-          nullptr,
-          juce::Identifier(IDs::simple_synth_apvts),
-          std::move(layout)),
-          synth(paramRefs)
+        parameters(*this, nullptr, layout),
+        synth(parameters.references)
+
 {
 
 }

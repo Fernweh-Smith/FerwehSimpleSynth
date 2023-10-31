@@ -8,14 +8,16 @@
 
 
 //==============================================================================
-PluginEditor::PluginEditor (PluginAudioProcessor& p, juce::AudioProcessorValueTreeState& apvts)
+PluginEditor::PluginEditor (PluginAudioProcessor& p, PluginParameters& paramStruct)
         : AudioProcessorEditor (&p),
         pluginProcessor (p),
-        valueTreeState(apvts),
-          gainFader(valueTreeState, IDs::out_gain)
+        parameters(paramStruct),
+          gainFader(parameters.treeState, IDs::out_gain),
+          choicePad(parameters.references.generatorGroup.wave_type, parameters.treeState)
 {
 
     addAndMakeVisible(gainFader);
+    addAndMakeVisible(choicePad);
 
     setSize (400, 300);
 }
@@ -40,7 +42,8 @@ void PluginEditor::resized() {
     fb.alignItems = juce::FlexBox::AlignItems::center;
 
 
-    fb.items.add(juce::FlexItem(gainFader).withWidth(GainFader::MIN_WIDTH).withMinHeight(250));
+//    fb.items.add(juce::FlexItem(gainFader).withWidth(GainFader::MIN_WIDTH).withMinHeight(250));
+    fb.items.add(juce::FlexItem(choicePad).withMinHeight(100).withMinWidth(100));
 
     fb.performLayout(getLocalBounds());
 }

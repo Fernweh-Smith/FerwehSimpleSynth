@@ -6,15 +6,26 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+using OnChangeCallback = std::function<void(const juce::String &parameterID, float newValue)>;
 
 class ParameterListener : protected juce::AudioProcessorValueTreeState::Listener{
+
 public:
-    explicit ParameterListener(juce::AudioProcessorValueTreeState& valueTreeState, std::string id);
+    ParameterListener(juce::AudioProcessorValueTreeState& valueTreeState, const juce::String& idToTrack, OnChangeCallback changedCallback);
+    ParameterListener(juce::AudioProcessorValueTreeState& valueTreeState, std::vector<juce::String> idsToTrack, OnChangeCallback changedCallback);
+
     ~ParameterListener() override;
-    const std::string idToTrack;
+    ParameterListener(ParameterListener& other) = delete;
+    ParameterListener& operator= (const ParameterListener& other) = delete;
+    ParameterListener(ParameterListener&& other) = delete;
+    ParameterListener& operator= (const ParameterListener&& other) = delete;
+
+
+    const std::vector<juce::String> trackedIDs;
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
+    const OnChangeCallback callback;
     void parameterChanged(const juce::String &parameterID, float newValue) override;
 
 
