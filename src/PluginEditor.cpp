@@ -28,21 +28,16 @@ PluginEditor::~PluginEditor()
 void PluginEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colour(34, 54, 67));
+    g.fillAll(juce::Colour(34, 54, 67).brighter());
 
 
 }
 
 void PluginEditor::resized() {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor.
-    using FlexBox = juce::FlexBox;
 
-    FlexBox fb;
-    fb.flexWrap = juce::FlexBox::Wrap::wrap;
-    fb.flexDirection = FlexBox::Direction::column;
-    fb.justifyContent = FlexBox::JustifyContent::center;
-    fb.alignContent = FlexBox::AlignContent::center;
+    juce::FlexBox fb;
+    fb.justifyContent = juce::FlexBox::JustifyContent::center;
+    fb.alignItems = juce::FlexBox::AlignItems::center;
 
 
     fb.items.add(juce::FlexItem(gainFader).withWidth(GainFader::MIN_WIDTH).withMinHeight(250));

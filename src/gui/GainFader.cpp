@@ -11,6 +11,9 @@ GainFader::GainFader(juce::AudioProcessorValueTreeState& treeState, const juce::
     valueLabel.setText(slider.getTextFromValue(slider.getValue()), juce::dontSendNotification);
     valueLabel.setJustificationType(juce::Justification::centred);
     slider.onValueChange = [this](){ valueLabel.setText(slider.getTextFromValue(slider.getValue()), juce::dontSendNotification); };
+    valueLabel.setEditable(true);
+    valueLabel.onTextChange = [this](){ slider.setValue(slider.getValueFromText(valueLabel.getText())); };
+
 
     slider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0,0);
@@ -19,15 +22,15 @@ GainFader::GainFader(juce::AudioProcessorValueTreeState& treeState, const juce::
     addAndMakeVisible(valueLabel);
     addAndMakeVisible(slider);
 
+
+
 }
 
 void GainFader::paint(juce::Graphics &g) {
-//    g.fillAll(juce::Colours::palegreen.darker());
 
     auto childBounds = getLookAndFeel().getSliderLayout(slider).sliderBounds;
     auto bounds = getLocalArea(&slider, childBounds);
-//    g.drawRect(bounds);
-//    g.drawRect(childBounds);
+
     std::vector<float> valuesToMark {6.0f, 3.0f, 0.0f, -3.0f, -6.0f, -12.0f, -20.0f, -30.0f, -100.0f};
 
     g.setColour(juce::Colours::white);
@@ -46,11 +49,9 @@ void GainFader::paint(juce::Graphics &g) {
         g.drawText(juce::String(val), textRect, juce::Justification::centredRight);
     }
 
-//    g.setColour(juce::Colours::white.darker());
-//    auto labelOutline = gainLabel.getBounds();
-//    g.drawRect(labelOutline);
 
     g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1.0f, 1.0f), 12.0f, 2.0f);
+
 }
 
 void GainFader::resized() {
@@ -58,20 +59,35 @@ void GainFader::resized() {
 
 //    subBox.performLayout(getLocalBounds());
 
+
     juce::FlexBox fb;
-    fb.flexWrap = juce::FlexBox::Wrap::wrap;
-    fb.justifyContent = juce::FlexBox::JustifyContent::center;
-    fb.alignContent = juce::FlexBox::AlignContent::center;
+    fb.flexWrap = juce::FlexBox::Wrap::noWrap;
+    fb.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
+    fb.alignItems = juce::FlexBox::AlignItems::center;
     fb.flexDirection = juce::FlexBox::Direction::column;
 
 
+    auto valueLabelFI = juce::FlexItem(valueLabel);
+    valueLabelFI.minHeight = 30.0f;
+    valueLabelFI.minWidth = MIN_WIDTH;
+
+    auto sliderFI = juce::FlexItem(slider);
+    sliderFI.width = 25;
+    sliderFI.flexGrow = 1.0f;
+    sliderFI.margin = {0,10.0f,0,0};
+    sliderFI.alignSelf = juce::FlexItem::AlignSelf::flexEnd;
+
+    auto titleLabelFI = juce::FlexItem(titleLabel);
+    titleLabelFI.minHeight = 30.0f;
+    titleLabelFI.minWidth = MIN_WIDTH;
 
 
-    fb.items.add(juce::FlexItem(valueLabel).withMinHeight(30).withMinWidth(MIN_WIDTH));
-    fb.items.add(juce::FlexItem(slider).withMinHeight(100).withWidth(40).withFlex(2.0f).withMargin(juce::FlexItem::Margin(0,0,0,getLocalBounds().getWidth()-40)));
-
-    fb.items.add(juce::FlexItem(titleLabel).withMinHeight(30).withMinWidth(MIN_WIDTH));
+    fb.items.add(valueLabelFI);
+    fb.items.add( sliderFI);
+    fb.items.add(titleLabelFI);
 
 
     fb.performLayout(getLocalBounds());
+
+
 }
