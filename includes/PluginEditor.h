@@ -7,6 +7,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "components/GainFader.h"
 #include "components/ChoicePad.h"
+#include "components/Pad.h"
 
 class PluginAudioProcessor;
 
@@ -28,7 +29,9 @@ private:
 
     GainFader gainFader;
     ChoicePad choicePad;
-
+    Pad pad;
+    PadToChoiceParameterAttachment padAttachment;
+//    juce::AudioProcessorValueTreeState::ButtonAttachment ba;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };
