@@ -4,45 +4,81 @@
 
 #include "components/Pad.h"
 
-Pad::Pad(int choiceIndex) : value(choiceIndex){
-    button.setTriggeredOnMouseDown(true);
-//    button.onClick = []{std::cout<<"Button Clicked\n";};
-//    button.onStateChange = [this]{std::cout<<"State Changed\n";
-//    std::cout << button.isDown() << "\n"; };
-
-    addAndMakeVisible(button);
+Pad::Pad() : juce::Button("")
+{
+    setTriggeredOnMouseDown(true);
 }
 
 Pad::~Pad() {
 
 }
 
-void Pad::paint(juce::Graphics &g) {
+
+void Pad::paintButton(juce::Graphics &g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
+    const float cornerSize = 6.0f;
+    const auto bounds = getLocalBounds().toFloat();
+    const float innerBuffer = 4.0f;
+
+    if(isEngaged()){
+        g.setColour(activeColour);
+    } else {
+        g.setColour(idleColour);
+    }
+
+    g.fillRoundedRectangle(bounds, cornerSize);
+
+    g.setColour(juce::Colours::black);
+    g.fillRoundedRectangle(bounds.reduced(innerBuffer), cornerSize - (innerBuffer/2.0f));
 }
 
-void Pad::resized() {
-    button.setBounds(getLocalBounds());
+void Pad::engage(bool shouldSendNotification) {
+    const auto notification = shouldSendNotification ? juce::sendNotification : juce::dontSendNotification;
+
+    if(isToggleable()){
+        setToggleState(true, notification);
+    } else {
+        triggerClick();
+    }
 }
 
-juce::Button& Pad::getButtonReference() {
-    return button;
+void Pad::release(bool shouldSendNotification) {
+    const auto notification = shouldSendNotification ? juce::sendNotification : juce::dontSendNotification;
+
+    if(isToggleable()){
+        setToggleState(false, notification);
+    }
 }
+
+bool Pad::isEngaged() {
+    if(isToggleable()){
+        return getToggleState();
+    } else {
+        return isDown();
+    }
+}
+
 
 //================ Param Attachment ================
 
-PadToChoiceParameterAttachment::PadToChoiceParameterAttachment(juce::AudioParameterChoice &parameter, Pad &pad,
+PadToChoiceParameterAttachment::PadToChoiceParameterAttachment(juce::AudioParameterChoice &parameter, Pad &pad, int outputValue,
                                                                juce::UndoManager *undoManager) :
                                                                pad(pad),
                                                                storedParameter(parameter),
-                                                               attachment(storedParameter, [this](float value) { setValue(value); }, undoManager)
+                                                               value(outputValue),
+                                                               attachment(storedParameter, [this](float value) { setValue(value); },
+                                                                          undoManager)
 {
+    pad.addListener(this);
+
+    pad.setToggleable(true);
+
     sendInitialUpdate();
-    pad.getButtonReference().addListener(this);
 }
 
 PadToChoiceParameterAttachment::~PadToChoiceParameterAttachment() {
-    pad.getButtonReference().removeListener(this);
+    pad.setToggleable(false);
 
+    pad.removeListener(this);
 }
 
 void PadToChoiceParameterAttachment::sendInitialUpdate() {
@@ -52,14 +88,15 @@ void PadToChoiceParameterAttachment::sendInitialUpdate() {
 void PadToChoiceParameterAttachment::setValue(float newValue) {
     const juce::ScopedValueSetter<bool> svs (ignoreCallbacks, true);
 
+    if(juce::approximatelyEqual(newValue, (float)value))
+        pad.engage();
+    else
+        pad.release();
 }
 
 void PadToChoiceParameterAttachment::buttonClicked(juce::Button *button) {
     if(ignoreCallbacks)
-        true;
-    if(button != &pad.getButtonReference())
         return;
 
-    std::cout<<"button clicked yo!!\n";
-    attachment.setValueAsCompleteGesture((float) pad.value);
+    attachment.setValueAsCompleteGesture((float)value);
 }

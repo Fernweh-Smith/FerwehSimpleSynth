@@ -7,18 +7,24 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_audio_processors/juce_audio_processors.h"
 
-class Pad : public juce::Component
+class Pad : public juce::Button
 {
 public:
-    explicit Pad(int choiceIndex);
+    Pad();
     ~Pad() override;
-    void paint(juce::Graphics &g) override;
-    void resized() override;
-    juce::Button& getButtonReference();
-    const int value;
+
+    void engage(bool shouldSendNotification = false);
+    void release(bool shouldSendNotification = false);
+
+    bool isEngaged();
+
+protected:
+    void paintButton(juce::Graphics &g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
 
 private:
-    juce::TextButton button;
+    juce::Colour idleColour = juce::Colours::white;
+    juce::Colour activeColour = juce::Colours::green.brighter();
+    juce::Colour errorColour = juce::Colours::red;
 
 };
 
@@ -26,7 +32,7 @@ class PadToChoiceParameterAttachment : private juce::Button::Listener
 {
 public:
     PadToChoiceParameterAttachment(juce::AudioParameterChoice& parameter,
-                                   Pad& pad, juce::UndoManager* undoManager = nullptr);
+                                   Pad& pad, int outputValue, juce::UndoManager* undoManager = nullptr);
     ~PadToChoiceParameterAttachment() override;
 
     void sendInitialUpdate();
@@ -34,6 +40,8 @@ private:
     void setValue(float newValue);
 
     void buttonClicked(juce::Button *button) override;
+
+    const int value;
 
     Pad& pad;
     juce::AudioParameterChoice& storedParameter;

@@ -4,23 +4,16 @@
 
 #include "components/ChoicePad.h"
 
-ChoicePad::ChoicePad(juce::AudioParameterChoice &parameter, juce::AudioProcessorValueTreeState &treeState) :
-    parameter(parameter), treeState(treeState), parameterListener(treeState, parameter.getParameterID(), paramChangedCallback)
+ChoicePad::ChoicePad(juce::AudioParameterChoice &parameter) : param(parameter)
 {
-    const int nButtons = 8;
+    const int nButtons = 4;
     for(int i = 0; i < nButtons; i++){
-        auto button = std::make_unique<juce::TextButton>();
-        button->setButtonText((std::stringstream() << i).str());
-        button->setTriggeredOnMouseDown(true);
-        button->onClick = [&parameter, i](){
-            parameter = i;
-        };
 
-        paramChangedCallback("", parameter.getIndex());
+        auto padAndAttachment = std::make_unique<PadAndAttachment>(i, param);
 
-        addAndMakeVisible(button.get());
+        addAndMakeVisible(padAndAttachment.get()->pad);
 
-        buttons.push_back(std::move(button));
+        pads.push_back(std::move(padAndAttachment));
     }
 }
 
@@ -31,12 +24,21 @@ void ChoicePad::resized() {
     juce::Grid grid;
     using Track = juce::Grid::TrackInfo;
     using Fr = juce::Grid::Fr;
+    using Px = juce::Grid::Px;
     grid.templateColumns = {Track(Fr(1)), Track(Fr(1))};
-//    grid.templateRows = {Track(Fr(1)), Track(Fr(1))};
+    grid.templateRows = {Track(Fr(1)), Track(Fr(1))};
 
-    for(auto& button : buttons){
-        grid.items.add( juce::GridItem(button.get()).withWidth(50).withHeight(50) );
+    grid.setGap(Px(9));
+
+    for(auto& pad : pads){
+        grid.items.add( juce::GridItem(pad.get()->pad));
     }
 
     grid.performLayout(getLocalBounds());
+}
+
+
+ChoicePad::PadAndAttachment::PadAndAttachment(int value, juce::AudioParameterChoice &param)
+: attachment(param, pad, value) {
+
 }

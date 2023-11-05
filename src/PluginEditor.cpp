@@ -13,10 +13,9 @@ PluginEditor::PluginEditor (PluginAudioProcessor& p, PluginParameters& paramStru
         pluginProcessor (p),
         parameters(paramStruct),
           gainFader(parameters.treeState, IDs::out_gain),
-          choicePad(parameters.references.generatorGroup.wave_type, parameters.treeState),
-          pad(1),
+          choicePad(parameters.references.generatorGroup.wave_type),
           padAttachment(parameters.references.generatorGroup.wave_type,
-                                         pad)
+                                         pad, 1)
 {
 
     addAndMakeVisible(gainFader);
@@ -47,7 +46,7 @@ void PluginEditor::resized() {
 
 
 //    fb.items.add(juce::FlexItem(gainFader).withWidth(GainFader::MIN_WIDTH).withMinHeight(250));
-//    fb.items.add(juce::FlexItem(choicePad).withMinHeight(100).withMinWidth(100));
-    fb.items.add(juce::FlexItem(pad).withWidth(100).withHeight(100));
+    fb.items.add(juce::FlexItem(choicePad).withMinHeight(150).withMinWidth(150));
+//    fb.items.add(juce::FlexItem(pad).withWidth(100).withHeight(100));
     fb.performLayout(getLocalBounds());
 }
