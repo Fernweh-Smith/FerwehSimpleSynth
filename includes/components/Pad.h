@@ -32,7 +32,7 @@ class PadToChoiceParameterAttachment : private juce::Button::Listener
 {
 public:
     PadToChoiceParameterAttachment(juce::AudioParameterChoice& parameter,
-                                   Pad& pad, int outputValue, juce::UndoManager* undoManager = nullptr);
+                                   Pad& padRef, int outputValue, juce::UndoManager* undoManager = nullptr);
     ~PadToChoiceParameterAttachment() override;
 
     void sendInitialUpdate();

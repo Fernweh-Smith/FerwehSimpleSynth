@@ -39,14 +39,18 @@ void PluginEditor::paint (juce::Graphics& g)
 }
 
 void PluginEditor::resized() {
+    const float spacing = 6.0f;
+    const auto spacer = juce::FlexItem().withWidth(spacing).withHeight(spacing);
 
     juce::FlexBox fb;
     fb.justifyContent = juce::FlexBox::JustifyContent::center;
     fb.alignItems = juce::FlexBox::AlignItems::center;
 
 
-//    fb.items.add(juce::FlexItem(gainFader).withWidth(GainFader::MIN_WIDTH).withMinHeight(250));
-    fb.items.add(juce::FlexItem(choicePad).withMinHeight(150).withMinWidth(150));
+
+    fb.items.add(juce::FlexItem(gainFader).withWidth(GainFader::MIN_WIDTH).withMinHeight(250));
+    fb.items.add(spacer);
+    fb.items.add(juce::FlexItem(choicePad).withMinHeight(250).withMinWidth(150));
 //    fb.items.add(juce::FlexItem(pad).withWidth(100).withHeight(100));
     fb.performLayout(getLocalBounds());
 }

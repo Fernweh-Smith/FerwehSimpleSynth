@@ -60,12 +60,12 @@ bool Pad::isEngaged() {
 
 //================ Param Attachment ================
 
-PadToChoiceParameterAttachment::PadToChoiceParameterAttachment(juce::AudioParameterChoice &parameter, Pad &pad, int outputValue,
+PadToChoiceParameterAttachment::PadToChoiceParameterAttachment(juce::AudioParameterChoice &parameter, Pad &padRef, int outputValue,
                                                                juce::UndoManager *undoManager) :
-                                                               pad(pad),
+                                                               pad(padRef),
                                                                storedParameter(parameter),
                                                                value(outputValue),
-                                                               attachment(storedParameter, [this](float value) { setValue(value); },
+                                                               attachment(storedParameter, [this](float newVal) { setValue(newVal); },
                                                                           undoManager)
 {
     pad.addListener(this);

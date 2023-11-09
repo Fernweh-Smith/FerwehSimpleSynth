@@ -3,6 +3,7 @@
 //
 
 #include "components/GainFader.h"
+#include "components/Constants.h"
 
 GainFader::GainFader(juce::AudioProcessorValueTreeState& treeState, const juce::String& paramID) : sliderAttachment(treeState, paramID, slider) {
     titleLabel.setText("Gain", juce::dontSendNotification);
@@ -49,8 +50,8 @@ void GainFader::paint(juce::Graphics &g) {
         g.drawText(juce::String(val), textRect, juce::Justification::centredRight);
     }
 
-
-    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1.0f, 1.0f), 12.0f, 2.0f);
+    auto borderBounds = getLocalBounds().toFloat().reduced(Style::BorderInset);
+    g.drawRoundedRectangle(borderBounds, Style::CornerRadius, Style::BorderThickness);
 
 }
 
